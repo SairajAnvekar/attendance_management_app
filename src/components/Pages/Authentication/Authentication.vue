@@ -1,12 +1,86 @@
 <template>
-  <div class="l-auth-container">
+    <div id="app">
+        <v-app id="inspire">
+          <v-content>
+            <v-container fluid fill-height>
+              <v-layout align-center justify-center>
+                <v-flex xs12 sm8 md4>
+                  <v-card class="elevation-12" v-if="signUpVisible == false">
+                    <v-toolbar dark color="primary">
+                      <v-toolbar-title>Login form</v-toolbar-title>
+                      <v-spacer></v-spacer>
+                    </v-toolbar>
+                    <v-card-text>
+                      <v-form v-model="validLogin">
+                        <v-text-field  
+                        v-model="credentials.username"
+                        prepend-icon="account_box"
+                        :rules="rules"
+                        required
+                        required name="login" label="Login" type="text"></v-text-field>
+                        <v-text-field prepend-icon="lock"
+                         v-model="credentials.password"
+                        :rules="rules"
+                        :append-icon="loginPasswordVisible ? 'visibility' : 'visibility_off'"
+                        :append-icon-cb="() => (loginPasswordVisible = !loginPasswordVisible)"
+                        :type="loginPasswordVisible ? 'text' : 'password'"
+                        required
+                         name="password" label="Password" id="password" type="password"></v-text-field>
+                      </v-form>
+                    </v-card-text>
+                    <v-card-actions>
+                      <v-spacer></v-spacer>
+                      <v-btn color="primary" @click.native="submitAuthentication()">Login</v-btn>
+                      <v-btn flat color="primary" @click.native="signUpVisible=true">Create account</v-btn>
+                    </v-card-actions>
+                  </v-card>
 
-      <div>
-    <v-btn color="green">Success</v-btn>
-    <v-btn color="error">Error</v-btn>
-    <v-btn color="warning">Warning</v-btn>
-    <v-btn color="info">Info</v-btn>
-  </div>
+                    <v-card class="elevation-12" v-if="signUpVisible">
+                      <v-toolbar dark color="primary">
+                        <v-toolbar-title>Sign Up form</v-toolbar-title>
+                        <v-spacer></v-spacer>
+                      </v-toolbar>
+                      <v-card-text>
+                        <v-form v-model="validSignUp">
+                          <v-text-field label="Username"
+                          v-model="newUser.username"
+                          prepend-icon="account_box"
+                          :rules="rules"
+                          required>
+                          </v-text-field>
+
+                          <v-text-field label="Employe ID"
+                          v-model="newUser.emp_id"
+                          prepend-icon="account_box"
+                          :rules="rules"
+                          required>
+                          </v-text-field>
+
+                          <v-text-field label="Password"
+                          v-model="newUser.password"
+                          prepend-icon="lock"
+                          :rules="rules"
+                          :append-icon="signUpPasswordVisible ? 'visibility' : 'visibility_off'"
+                          :append-icon-cb="() => (signUpPasswordVisible = !signUpPasswordVisible)"
+                          :type="signUpPasswordVisible ? 'text' : 'password'"
+                          required>
+                          </v-text-field>                  
+                        </v-form>
+                      </v-card-text>
+                      <v-card-actions>
+                          <v-spacer></v-spacer>
+                          <v-btn color="primary" @click.native="signUpVisible=false">Login</v-btn>
+                          <v-btn block color="primary" @click.native="submitSignUp()">Sign Up</v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-flex>
+              </v-layout>
+            </v-container>
+          </v-content>
+        </v-app>
+      </div>
+
+  <!--div class="l-auth-container">
     <div class="l-auth">
       <v-form v-model="validLogin">
         <v-text-field label="Username"
@@ -71,7 +145,7 @@
                 v-model="snackbar">
       {{ message }}
     </v-snackbar>
-  </div>
+  </div !-->
 </template>
 <script>
 import Authentication from '@/components/pages/Authentication'
@@ -94,8 +168,12 @@ export default {
         password: '',
         emp_id: ''
       },
-      message: ''
+      message: '',
+      drawer: null
     }
+  },
+  props: {
+        source: String
   },
   methods: {
     submitAuthentication () {

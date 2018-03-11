@@ -1,15 +1,17 @@
 <template>
+  <v-content>
+    <v-container fluid fill-height>
+   <v-layout>
+      <app-header></app-header>
   <div>
-    <app-header></app-header>
-    <h3>Hi! this is our App's Home</h3>
-    <ul>
-      <li v-if="attendances != null" v-for="attendance in attendances">
-        {{ attendance.emp_id }}
-      </li>
+    <h3>Welcome to Attendance Management</h3>
     </ul>
-
     <v-btn  v-on:click="markAttendance" color="green lighten-1 white--text" :disabled="validated == 1" >Mark Attendance</v-btn>
   </div>
+  <app-footer></app-footer>
+</v-layout>
+</v-container>
+</v-content>
 </template>
 <script>
 import Axios from 'axios'
@@ -20,6 +22,7 @@ export default {
   data () {
     return {
       validated : 0,
+      loginPage : false, 
       attendances: []
     }
   },
