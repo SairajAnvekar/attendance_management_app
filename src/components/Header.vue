@@ -47,13 +47,17 @@ export default {
     return {
       search: '',
       status: '',     
+      drawer: null
     }
   },
   methods: {
     submitSignout () {
       Authentication.signout(this, '/login')
     }
-  }
+  },
+  props: {
+      source: String
+    }
 }
 </script>
 
