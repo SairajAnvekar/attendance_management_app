@@ -1,16 +1,13 @@
 <template>
   <v-content>
-    <v-container fluid fill-height>
    <v-layout>
       <app-header></app-header>
-  <div>
-    <h3>Welcome to Attendance Management</h3>
-    </ul>
-    <v-btn  v-on:click="markAttendance" color="green lighten-1 white--text" :disabled="validated == 1" >Mark Attendance</v-btn>
-  </div>
+        <v-container fluid fill-height>
+          <h3>Welcome to Attendance Management</h3>
+          <v-btn  v-on:click="markAttendance" color="green lighten-1 white--text" :disabled="validated == 1" >Mark Attendance</v-btn>
+        </v-container>
   <app-footer></app-footer>
 </v-layout>
-</v-container>
 </v-content>
 </template>
 <script>

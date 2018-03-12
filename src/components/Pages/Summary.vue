@@ -1,9 +1,10 @@
 <template>
         <v-content>
-            <v-container fluid fill-height>
+            
                 <v-layout>
                         <app-header></app-header>
-                    <div>
+                    <!-- div md8 -->
+                        <v-container >
                         <h3>Your Attendance Summary</h3>
                         <v-data-table
                         :headers="headers"
@@ -13,15 +14,16 @@
                         class="elevation-1">
                         <template slot="items" slot-scope="props">
                         <td>{{ props.item.emp_id }}</td>
-                        <td class="text-xs-right">{{ props.item.date }}</td>
-                        <td class="text-xs-right">{{ props.item.in_time }}</td>
-                        <td class="text-xs-right">{{ props.item.out_time }}</td>
+                        <td class="text-xs-left">{{ props.item.date }}</td>
+                        <td class="text-xs-left">{{ props.item.in_time }}</td>
+                        <td class="text-xs-left">{{ props.item.out_time }}</td>
+                        <td class="text-xs-left">{{ props.item.duration }}</td>
                         </template>
                         </v-data-table>
-                    </div>
+                    </v-container>
+                    <!--/div -->
                     <app-footer></app-footer>
                 </v-layout>
-            </v-container>
         </v-content>
 </template>
 <script>
@@ -29,6 +31,7 @@
     import moment from 'moment'
     import Authentication from '@/components/pages/Authentication'
     const apiURL = 'http://localhost:3001'// 'https://focus-budget-manager-api.herokuapp.com'
+    const dailyDuration = 8
     export default {
         data () {
         return {
@@ -48,7 +51,8 @@
                 },
                 { text: 'Date', value: 'Date' },
                 { text: 'In Time', value: 'inTime' },
-                { text: 'Out Time', value: 'outTIme' }
+                { text: 'Out Time', value: 'outTIme' },
+                { text: 'Hours Worked Today', value: 'HoursToday' }
                 ]
         }
         },
@@ -71,7 +75,12 @@
             params: {
                 emp_id: this.$cookie.get('emp_id'),            
             }
-        }).then(({data}) => (this.attendanceList = data))
+        }).then(({
+            data        
+        }) => (
+            this.attendanceList = data,
+            this.changeDateFormat()  
+        ))
         },
         toggleAll () {
         if (this.selected.length) this.selected = []
@@ -84,6 +93,27 @@
           this.pagination.sortBy = column
           this.pagination.descending = false
         }
+      },
+      changeDateFormat(){
+           if( this.attendanceList instanceof Array){
+            this.attendanceList.forEach(element => {
+                var inTime = element.in_time,outTime =  element.out_time
+                    element.date = new Date(element.date).toLocaleDateString();
+                    element.in_time = new Date(element.in_time).toLocaleDateString()
+                    if(element.out_time){
+                        element.out_time = new Date(element.out_time).toLocaleDateString()
+                        var duration = Math.abs((new Date(inTime)).getTime() - (new Date(outTime)).getTime());
+                        var hours = duration/3600000
+                        var minutes = duration/60000
+                        var seconds = duration/1000
+                        element.duration = Math.floor(hours) + ":" + Math.floor(minutes/100) + ":" + Math.floor(seconds/10000); 
+                    }else{
+                        element.out_time = 0;
+                        element.duration = dailyDuration;
+                    }
+
+            });
+            }
       }
 
         }

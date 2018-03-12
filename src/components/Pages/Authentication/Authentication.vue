@@ -73,6 +73,11 @@
                           <v-btn block color="primary" @click.native="submitSignUp()">Sign Up</v-btn>
                         </v-card-actions>
                     </v-card>
+                    <v-snackbar bottom="bottom"
+                    color="red lighten-1"
+                    v-model="snackbar">
+                    {{ message }}
+                    </v-snackbar>
                 </v-flex>
               </v-layout>
             </v-container>
