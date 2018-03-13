@@ -29,6 +29,7 @@
 <script>
     import Axios from 'axios'
     import moment from 'moment'
+    import DateOnly  from 'dateonly'
     import Authentication from '@/components/pages/Authentication'
     const apiURL = 'http://localhost:3001'// 'https://focus-budget-manager-api.herokuapp.com'
     const dailyDuration = 8
@@ -98,6 +99,11 @@
            if( this.attendanceList instanceof Array){
             this.attendanceList.forEach(element => {
                 var inTime = element.in_time,outTime =  element.out_time
+                     console.log((moment(element.in_time).format('hh')));
+                     console.log(element.date);
+                     var attendanceDate = new DateOnly(element.date);
+                    
+                    element.date = attendanceDate.toDate();
                     element.date = new Date(element.date).toLocaleDateString();
                     element.in_time = new Date(element.in_time).toLocaleDateString()
                     if(element.out_time){

@@ -3,8 +3,21 @@
    <v-layout>
       <app-header></app-header>
         <v-container fluid fill-height>
-          <h3>Welcome to Attendance Management</h3>
-          <v-btn  v-on:click="markAttendance" color="green lighten-1 white--text" :disabled="validated == 1" >Mark Attendance</v-btn>
+          <v-layout row wrap>
+            <v-flex xs12>   
+              <h1>Mark Your Attendance  For Today  {{currentDate}}</h1>
+            </v-flex>
+            <v-flex xs2>  
+              <p v-if="disableCheckin">Checkin has been Marked</p>
+            </v-flex>
+            <v-flex xs2>  
+              <p v-if="disableCheckout">Checkout has been Marked</p>
+            </v-flex>
+            <v-flex xs12>  
+              <v-btn  v-on:click="markAttendance" color="green lighten-1 white--text" :disabled="disableCheckin" >Check In</v-btn>
+              <v-btn  v-on:click="checkout" color="green lighten-1 white--text"  :disabled="disableCheckout" >Check Out</v-btn>
+            </v-flex>
+          </v-layout>
         </v-container>
   <app-footer></app-footer>
 </v-layout>
@@ -18,13 +31,18 @@ const apiURL = 'http://localhost:3001'// 'https://focus-budget-manager-api.herok
 export default {
   data () {
     return {
-      validated : 0,
+      validated : 1,
       loginPage : false, 
-      attendances: []
+      attendances: [],
+      disableCheckout:false,
+      disableCheckin:false,
+      attendance_id :'', 
+      currentAttendance: {},
+      currentDate :moment().format('MMMM Do YYYY')
     }
   },
   mounted () {
-    this.getAllUsers()
+    this.checkAttendance()
   },
   methods: {
     getAllUsers (context) {
@@ -39,8 +57,37 @@ export default {
         headers: {
           'Authorization': Authentication.getAuthenticationHeader(this)
         }
-      }).then(({data}) => ( console.log(data.attendance.date),
+      }).then(({data}) => (  this.disableCheckin = true,this.currentAttendance=data.attendance,
       console.log(moment(data.attendance.date).format('MMMM Do YYYY, h:mm:ss a'))))
+    },
+    
+
+    checkAttendance (context) {
+      Axios.get(`${apiURL}/api/v1/attendance/check`, {
+        headers: {
+        'Authorization': Authentication.getAuthenticationHeader(this)
+        },
+        params: {
+            emp_id: this.$cookie.get('emp_id'),            
+        }
+      }).then(({data}) => {
+         if( data && data.length > 0){
+          this.currentAttendance = data[0] ;
+          console.log(this.currentAttendance); 
+          this.attendance_id = this.currentAttendance._id;
+          this.disableCheckin = this.currentAttendance._id ? true : false;
+          this.disableCheckout = this.currentAttendance.out_time ? true : false;
+         }       
+      })
+    },
+
+    checkout (context) {
+      console.log(this.currentAttendance);
+      Axios.put(`${apiURL}/api/v1/attendance/checkout`, {emp_id: this.$cookie.get('emp_id') ,attendance_id : this.currentAttendance._id}, {
+        headers: {
+          'Authorization': Authentication.getAuthenticationHeader(this)
+        }
+      }).then(({data}) => (this.disableCheckout = true ))
     }
 
   }
