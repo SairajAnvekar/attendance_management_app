@@ -5,7 +5,7 @@ import * as Auth from '@/components/pages/Authentication'
 import Authentication from '@/components/pages/Authentication/Authentication'
 import Home from '@/components/pages/Home'
 import Summary from '@/components/pages/Summary'
-
+import AdminView from '@/components/pages/AdminPage'
 // Global components
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
@@ -13,7 +13,6 @@ import Footer from '@/components/Footer'
 // Register components
 Vue.component('app-header', Header)
 Vue.component('app-footer', Footer)
-
 Vue.use(Router)
 
 const router = new Router({
@@ -47,6 +46,18 @@ const router = new Router({
         requiredAuth: true
       }
     },
+    {
+      path: '/adminView',
+      name: 'AdminView',
+      components: {
+        default: AdminView,
+        header: Header,
+        foter:Footer
+      },
+      meta: {
+        requiredAuth: true
+      }
+    }
   ]
 })
 

@@ -111,11 +111,9 @@
                         element.out_time = 0;
                         element.duration = dailyDuration;
                     }
-
             });
             }
       }
-
         }
     }
 </script>
