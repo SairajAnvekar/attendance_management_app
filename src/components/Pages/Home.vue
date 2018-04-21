@@ -2,22 +2,49 @@
   <v-content>
    <v-layout>
       <app-header></app-header>
-        <v-container fluid fill-height>
-          <v-layout row wrap>
-            <v-flex xs12>   
-              <h1>Mark Your Attendance  For Today  {{currentDate}}</h1>
-            </v-flex>
-            <v-flex xs2>  
-              <p v-if="disableCheckin">Checkin has been Marked</p>
-            </v-flex>
-            <v-flex xs2>  
-              <p v-if="disableCheckout">Checkout has been Marked</p>
-            </v-flex>
-            <v-flex xs12>  
-              <v-btn  v-on:click="markAttendance" color="green lighten-1 white--text" :disabled="disableCheckin" >Check In</v-btn>
-              <v-btn  v-on:click="checkout" color="green lighten-1 white--text"  :disabled="disableCheckout" >Check Out</v-btn>
-            </v-flex>
-          </v-layout>
+        <v-container >     
+           <v-list   class="elevation-1 currentAttendance m-1">
+             <v-layout row wrap header >
+              <v-flex xs3>
+                 Date
+              </v-flex> 
+              <v-flex xs3>
+                In Time
+              </v-flex>
+              <v-flex xs3>
+                Out time
+              </v-flex>
+              <v-flex xs3>
+                Hours Worked Today
+              </v-flex> 
+               </v-layout>   
+
+            <v-layout row  wrap content>
+              <v-flex xs3>
+                {{currentDate}}
+              </v-flex> 
+
+              <v-flex xs3 wrap>
+                <div wrap>
+                  <p v-if="disableCheckin">{{checkInTime}}</p>                 
+                  <v-btn  small v-else v-on:click="markAttendance" color="green lighten-1 white--text" :disabled="disableCheckin" ><v-icon left dark>directions_run</v-icon> Check In</v-btn>
+                </div>
+              </v-flex>
+
+              <v-flex xs3 wrap>
+                <div>
+                  <p v-if="disableCheckout"> {{checkoutTime}}</p>
+                  <v-btn  small v-else v-on:click="checkout" color="green lighten-1 white--text"  :disabled="disableCheckout" > <v-icon left dark>directions_run</v-icon> Check Out</v-btn>
+                </div>
+              </v-flex>
+              <v-flex xs3>
+              {{hourWorked}}
+              </v-flex>  
+            </v-layout>              
+          </v-list>         
+       
+          <app-summary :prop_emp_id="this.$cookie.get('emp_id')"></app-summary>
+
         </v-container>
   <app-footer></app-footer>
 </v-layout>
@@ -27,7 +54,8 @@
 import Axios from 'axios'
 import moment from 'moment'
 import Authentication from '@/components/pages/Authentication'
-const apiURL = 'http://localhost:3001'// 'https://focus-budget-manager-api.herokuapp.com'
+import APIurlConfig from '../../apiConfig'
+const apiURL =  APIurlConfig.API_URL // 'http://localhost:3001'
 export default {
   data () {
     return {
@@ -38,7 +66,26 @@ export default {
       disableCheckin:false,
       attendance_id :'', 
       currentAttendance: {},
+      date: '',
+      menu:false,
       currentDate :moment().format('MMMM Do YYYY')
+    }
+  },
+  computed: {
+     checkInTime () {
+       if(this.currentAttendance)
+       return moment(this.currentAttendance.in_time).format('h:mm:ss a');
+       return ''
+     },
+      checkoutTime () {
+       if(this.currentAttendance)
+       return moment(this.currentAttendance.out_time).format('h:mm:ss a');
+       return ''
+     },
+     hourWorked(){
+       if(this.currentAttendance)
+        return ((moment(this.currentAttendance.out_time).diff(moment(this.currentAttendance.in_time), 'minutes')) / 60).toFixed(2);
+       return '' 
     }
   },
   mounted () {
@@ -57,8 +104,8 @@ export default {
         headers: {
           'Authorization': Authentication.getAuthenticationHeader(this)
         }
-      }).then(({data}) => (  this.disableCheckin = true,this.currentAttendance=data.attendance,
-      console.log(moment(data.attendance.date).format('MMMM Do YYYY, h:mm:ss a'))))
+      }).then(({data}) => (  this.disableCheckin = true,this.currentAttendance=data.attendance
+      ));
     },
     
 
@@ -93,3 +140,19 @@ export default {
   }
 }
 </script>
+
+<style lang="scss">
+.currentAttendance{
+  padding:15px !important; 
+  background: white;
+}
+.header{
+ font-weight: bold;
+ font-size: 13px;
+ border-bottom: 1px solid rgba(0,0,0,.12);
+}
+.content{
+  padding-top: 1rem;
+  font-size: 12px;
+}
+</style>

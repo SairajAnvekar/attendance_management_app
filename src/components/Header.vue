@@ -2,7 +2,7 @@
 <template>
   <header class="l-header-container">
       <v-navigation-drawer fixed v-model="drawer" app>
-      <v-list dense>
+      <v-list dense>       
         <v-list-tile @click="">
           <v-list-tile-action>
             <v-icon>home</v-icon>
@@ -13,35 +13,77 @@
             </router-link>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile @click="">
+
+         <v-list-tile @click="">
           <v-list-tile-action>
-            <v-icon>contact_mail</v-icon>
+            <v-icon>home</v-icon>
           </v-list-tile-action>
           <v-list-tile-content>
-              <router-link to="/summary">
-                <v-list-tile-title>Summary</v-list-tile-title>
-             </router-link>
+            <router-link to="/leave">
+              <v-list-tile-title>Leave</v-list-tile-title>
+            </router-link>
           </v-list-tile-content>
         </v-list-tile>
-        <v-list-tile @click="">
+       
+           <v-list-tile  @click="">
             <v-list-tile-action>
               <v-icon>contact_mail</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
-                <router-link to="/adminView">
-                  <v-list-tile-title>AdminView</v-list-tile-title>
+                <router-link to="/edit">
+                  <v-list-tile-title>Edit </v-list-tile-title>
                </router-link>
             </v-list-tile-content>
           </v-list-tile>
+
+           <v-list-tile v-if="role =='admin' || role == 'manager'" @click="">
+            <v-list-tile-action>
+              <v-icon>contact_mail</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+                <router-link to="/approvals">
+                  <v-list-tile-title>approvals </v-list-tile-title>
+               </router-link>
+            </v-list-tile-content>
+          </v-list-tile>
+
+
+          <v-list-tile v-if="role =='admin' || role == 'manager'" @click="">
+            <v-list-tile-action>
+              <v-icon>contact_mail</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <router-link to="/teams">
+              <v-list-tile-title>Teams</v-list-tile-title>
+              </router-link>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-tile v-if="role =='admin' || role == 'manager'" @click="">
+            <v-list-tile-action>
+              <v-icon>contact_mail</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <router-link to="/adminView">
+              <v-list-tile-title>AdminView</v-list-tile-title>
+              </router-link>
+            </v-list-tile-content>
+          </v-list-tile>
       </v-list>
-    </v-navigation-drawer> 
+      
+      
+    </v-navigation-drawer>      
+
     <v-toolbar color="indigo" dark fixed app>
         <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
         <v-toolbar-title>Application</v-toolbar-title>
-        <v-flex xs2 offset-md7 md2>
-          <v-btn  color="blue" @click.native="submitSignout()">Sign out</v-btn>
-        </v-flex>
-      </v-toolbar>
+         <v-spacer></v-spacer>
+         <v-toolbar-items>
+          <v-btn icon large @click.native="submitSignout()">
+            <v-icon>exit_to_app</v-icon>          
+          </v-btn>        
+      </v-toolbar-items>   
+    </v-toolbar>
   </header>
 </template>
 <!--v-layout row wrap>
@@ -57,7 +99,8 @@ export default {
     return {
       search: '',
       status: '',     
-      drawer: null
+      drawer: null,
+      role: this.$cookie.get('role')
     }
   },
   methods: {

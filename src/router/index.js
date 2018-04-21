@@ -6,13 +6,22 @@ import Authentication from '@/components/pages/Authentication/Authentication'
 import Home from '@/components/pages/Home'
 import Summary from '@/components/pages/Summary'
 import AdminView from '@/components/pages/AdminPage'
+import Edit from '@/components/pages/Edit'
+import Attendance from '@/components/pages/Attendance'
+import Approvals from '@/components/pages/Approvals'
+import Teams from '@/components/pages/Team'
+import TeamInfo from '@/components/pages/TeamInfo'
+import Leave from '@/components/pages/leave'
 // Global components
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 
+
+
 // Register components
 Vue.component('app-header', Header)
 Vue.component('app-footer', Footer)
+Vue.component('app-summary', Summary)
 Vue.use(Router)
 
 const router = new Router({
@@ -23,7 +32,8 @@ const router = new Router({
       components: {
         default: Home,
         header: Header,
-        foter:Footer
+        summary: Summary,
+        footer:Footer
       },
       meta: {
         requiredAuth: true
@@ -34,13 +44,28 @@ const router = new Router({
       name: 'Authentication',
       component: Authentication
     },
+
+  {
+      path: '/attendance/:id',
+      name: 'Attendance',
+      components: {
+        default: Attendance,
+        header: Header,
+        summary: Summary,
+        footer:Footer
+      },
+      meta: {
+        requiredAuth: true
+      }
+    },
+
     {
       path: '/summary',
       name: 'Summary',
       components: {
         default: Summary,
         header: Header,
-        foter:Footer
+        footer:Footer
       },
       meta: {
         requiredAuth: true
@@ -57,7 +82,71 @@ const router = new Router({
       meta: {
         requiredAuth: true
       }
+    },
+    {
+      path: '/edit',
+      name: 'Edit',
+      components: {
+        default: Edit,
+        header: Header,
+        foter:Footer
+      },
+      meta: {
+        requiredAuth: true
+      }
+    },
+      {
+      path: '/approvals',
+      name: 'Apprvals',
+      components: {
+        default: Approvals,
+        header: Header,
+        foter:Footer
+      },
+      meta: {
+        requiredAuth: true
+      }
+    },
+
+     {
+      path: '/teams',
+      name: 'Teams',
+      components: {
+        default: Teams,
+        header: Header,
+        foter:Footer
+      },
+      meta: {
+        requiredAuth: true
+      }
+    },
+
+      {
+      path: '/teamInfo/:teamId',
+      name: 'TeamInfo',
+      components: {
+        default: TeamInfo,
+        header: Header,
+        foter:Footer
+      },
+      meta: {
+        requiredAuth: true
+      }
+    },
+    
+     {
+      path: '/leave',
+      name: 'Leave',
+      components: {
+        default: Leave,
+        header: Header,
+        foter:Footer
+      },
+      meta: {
+        requiredAuth: true
+      }
     }
+
   ]
 })
 

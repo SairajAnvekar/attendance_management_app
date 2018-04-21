@@ -3,8 +3,7 @@
     <v-layout>
       <app-header></app-header>
       <v-container>
-        <h3>Users</h3>
-        <v-dialog v-model="dialog2" fullscreen transition="dialog-bottom-transition" :overlay="false" scrollable>
+       <v-dialog v-model="dialog2" fullscreen transition="dialog-bottom-transition" :overlay="false" scrollable>
           <v-card>
             <v-toolbar card dark color="primary">
               <v-btn icon @click.native="dialog2 = false" dark>
@@ -93,29 +92,25 @@
               </v-radio-group>
             </v-list>
           </v-card>
-        </v-dialog>
-        <v-btn color="primary" fab dark @click="create()">
-          <v-icon dark>group_add</v-icon>
-        </v-btn>
-
-        <v-data-table :headers="headers" :items="usersList" :pagination.sync="pagination" item-key="name" class="elevation-1">
-          <template slot="items" slot-scope="props">
-            <td>{{ props.item.username }}</td>
-            <td>{{ props.item.email }}</td>
-            <td class="text-xs-center">
-              <router-link :to="'attendance/'+props.item.emp_id " style="text-decoration: none">
-                <v-btn small color="green lighten-1 white--text">
-                  <v-icon small left>chrome_reader_mode</v-icon> Attendance
-                </v-btn>
-              </router-link>
-            </td>
-            <td class="text-xs-center">
-              <v-btn small color="green lighten-1 white--text" v-on:click="editEmploye(props.item)">
-                <v-icon small left>edit</v-icon> Edit
-              </v-btn>
-            </td>
-          </template>
-        </v-data-table>
+        </v-dialog>     
+            <v-data-table :headers="headers" :items="usersList" item-key="name" class="elevation-1">
+              <template slot="items" slot-scope="props">
+                <td>{{ props.item.username }}</td>
+                <td>{{ props.item.email }}</td>
+                <td class="text-xs-center">
+                  <router-link :to="'../attendance/'+props.item.emp_id " style="text-decoration: none">
+                    <v-btn small color="green lighten-1 white--text">
+                      <v-icon small left>chrome_reader_mode</v-icon> Attendance
+                    </v-btn>
+                  </router-link>
+                </td>
+                <td class="text-xs-center">
+                  <v-btn small color="green lighten-1 white--text" v-on:click="editEmploye(props.item)">
+                    <v-icon small left>edit</v-icon> Edit
+                  </v-btn>
+                </td>
+              </template>
+            </v-data-table>
       </v-container>
       <app-footer></app-footer>
     </v-layout>
@@ -126,17 +121,16 @@
   import moment from 'moment'
   import Authentication from '@/components/pages/Authentication'
   import APIurlConfig from '../../apiConfig'
-  const apiURL = APIurlConfig.API_URL // 'http://localhost:3001'
-  const dailyDuration = 8
+  const apiURL = APIurlConfig.API_URL
   export default {
     data() {
       return {
-        validated: 0,
+        validated: 1,
         usersList: [],
-        loginPage: false,
         dialog2: false,
         role: this.$cookie.get('role'),
-        employe: {
+        loginPage: this.$route.params,
+           employe: {
           username: '',
           password: '',
           emp_id: '',
@@ -144,10 +138,6 @@
           _id: '',
           tel_no: '',
           role: 'employe'
-        },
-        defaultSate: this.employe,
-        pagination: {
-          sortBy: 'date'
         },
         headers: [{
             text: 'Username',
@@ -174,70 +164,16 @@
       }
     },
     mounted() {
-      this.getAllUsers(),
-        this.getAllRegularize()
+      this.getAllUsers();
     },
     methods: {
-      getAllUsers(context) {
-        Axios.get(`${apiURL}/api/v1/users/admin`, {
-          headers: {
-            'Authorization': Authentication.getAuthenticationHeader(this)
-          }
-        }).then(({
-          data
-        }) => (
-          this.usersList = data,
-          this.handleUsers()
-        ))
-      },
 
-      getAllRegularize(context) {
-        Axios.get(`${apiURL}/api/v1/attendance/regularize`, {
-          headers: {
-            'Authorization': Authentication.getAuthenticationHeader(this)
-          }
-        }).then(({
-          data
-        }) => (
-          console.log(data)
-        ))
-      },
-
-      create() {
-        this.dialog2 = true;
-        this.employe = {
-          username: '',
-          password: '',
-          emp_id: '',
-          email: '',
-          _id: '',
-          tel_no: '',
-          role: 'employe'
-        };
-      },
-
-      editEmploye(emp) {
+ editEmploye(emp) {
         delete emp.password;
         this.dialog2 = true;
         this.employe = emp;
       },
-      
-      save() {
-        Axios.post(`${apiURL}/api/v1/signup`, this.employe)
-          .then(({
-            data: {
-              token
-            }
-          }) => {
-            this.getAllUsers();
-          }).catch(({
-            response: {
-              data
-            }
-          }) => {})
-      },
-
-      update(context) {
+           update(context) {
         Axios.put(`${apiURL}/api/v1/user`, this.employe, {
           headers: {
             'Authorization': Authentication.getAuthenticationHeader(this)
@@ -246,14 +182,21 @@
           data
         }) => (console.log(data)))
       },
-
-      toggleAll() {
-        if (this.selected.length) this.selected = []
-        else this.selected = this.items.slice()
+      getAllUsers(context) {
+        Axios.get(`${apiURL}/api/v1/manage/team/members`, {
+          headers: {
+            'Authorization': Authentication.getAuthenticationHeader(this)
+          },
+          params: {
+           team_id:this.$route.params.teamId,
+          }
+        }).then(({
+          data
+        }) => (
+          this.usersList = data        
+        ))
       },
-      handleUsers() {
-        console.log(this.usersList)
-      }
+
     }
   }
 

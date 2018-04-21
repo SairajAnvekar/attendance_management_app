@@ -30,8 +30,7 @@
                     </v-card-text>
                     <v-card-actions>
                       <v-spacer></v-spacer>
-                      <v-btn color="primary" @click.native="submitAuthentication()">Login</v-btn>
-                      <v-btn flat color="primary" @click.native="signUpVisible=true">Create account</v-btn>
+                      <v-btn color="primary" @click.native="submitAuthentication()">Login</v-btn>                 
                     </v-card-actions>
                   </v-card>
 
