@@ -18,7 +18,8 @@ export default {
         this.user.authenticated = true
         if (redirect) router.push(redirect)
       }).catch(({response: {data}}) => {
-        context.snackbar = true
+        context.snackbar = true,
+        context.loading = false,
         context.message = data.message
       })
   },
@@ -38,6 +39,7 @@ export default {
       // if (redirect) router.push(redirect)
       }).catch(({response: {data}}) => {
         context.snackbar = true
+        context.loading = false,
         context.message = data.message
       })
   },

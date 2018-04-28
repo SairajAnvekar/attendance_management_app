@@ -14,7 +14,7 @@
               <v-spacer></v-spacer>
               <v-toolbar-items>
                 <v-btn dark flat @click.native="create()">Save</v-btn>
-                <v-btn dark flat>Update</v-btn>
+                <v-btn dark flat @click.native="update()">Update</v-btn>
               </v-toolbar-items>
             </v-toolbar>
 
@@ -79,12 +79,12 @@
                 <v-divider :inset="true" :key="index"></v-divider>
                 <v-list-tile avatar :key="id" @click="">
                   <v-list-tile-avatar>
-                    <span class="red--text"> {{usersListMap[id].username.charAt(0)}}</span>
+                    <span class="white--text"> {{usersListMap[id].username.charAt(0)}}</span>
                   </v-list-tile-avatar>
                   <v-list-tile-content>
                     <v-list-tile-title v-html="usersListMap[id].username"></v-list-tile-title>
                     <v-list-tile-sub-title v-html="usersListMap[id].username"></v-list-tile-sub-title>
-                  </v-list-tile-content>             
+                  </v-list-tile-content>
                 </v-list-tile>
               </template>
             </v-list>
@@ -98,33 +98,41 @@
 
         <v-list two-line>
           <v-subheader>Teams</v-subheader>
-          <template v-for="(team, index) in teams" >
+          <template v-for="(team, index) in teams">
 
             <v-divider :inset="true" :key="index"></v-divider>
             <v-list-tile avatar :key="team.name">
               <v-list-tile-avatar>
-                <span class="red--text"> {{team.name.charAt(0)}}</span>
+                <span class="white--text"> {{team.name.charAt(0)}}</span>
               </v-list-tile-avatar>
               <v-list-tile-content>
                 <v-list-tile-title v-html="team.name"></v-list-tile-title>
                 <v-list-tile-sub-title v-html="team.name"></v-list-tile-sub-title>
               </v-list-tile-content>
-                   <v-list-tile-action>
-                  <router-link :to="'teamInfo/'+team._id " style="text-decoration: none">
-                 <v-btn  >View</v-btn>  
-                  </router-link>          
-                  </v-list-tile-action>
-                  <v-list-tile-action>
-                     <v-btn  @click="editTeam(team)" >Edit</v-btn>                       
-                  </v-list-tile-action>
-                  <v-list-tile-action>
-                   <v-btn  @click="editTeam(team)" >Delete</v-btn>                       
-                  </v-list-tile-action>
+              <v-list-tile-action>
+                <router-link :to="'teamInfo/'+team._id " style="text-decoration: none">
+                  <v-btn @click="" outline small fab color="indigo">
+                    <v-icon>visibility</v-icon>
+                  </v-btn>
+                </router-link>
+              </v-list-tile-action>
+              <v-list-tile-action>
+                <v-btn @click="editTeam(team)" outline small fab color="indigo">
+                  <v-icon>edit</v-icon>
+                </v-btn>
+
+              </v-list-tile-action>
+              <v-list-tile-action>
+                <v-btn @click="deleteTeam(team)" outline small fab color="indigo">
+                  <v-icon>delete</v-icon>
+                </v-btn>
+              </v-list-tile-action>
             </v-list-tile>
           </template>
         </v-list>
 
       </v-container>
+
       <app-footer></app-footer>
     </v-layout>
   </v-content>
@@ -160,16 +168,45 @@
     methods: {
       create() {
         this.team.manager_id = this.$cookie.get('id'),
-        Axios.post(`${apiURL}/api/v1/manage/team`, this.team, {
-          headers: {
-            'Authorization': Authentication.getAuthenticationHeader(this)
-          }
-        }).then(({
-          data
-        }) => (
-          this.teams.push(data.team),
-          this.teamDialog = false        
-        ));
+          Axios.post(`${apiURL}/api/v1/manage/team`, this.team, {
+            headers: {
+              'Authorization': Authentication.getAuthenticationHeader(this)
+            }
+          }).then(({
+            data
+          }) => (
+            this.teams.push(data.team),
+            this.teamDialog = false
+          ));
+      },
+
+      update() {
+        this.team.manager_id = this.$cookie.get('id'),
+          Axios.put(`${apiURL}/api/v1/manage/team`, this.team, {
+            headers: {
+              'Authorization': Authentication.getAuthenticationHeader(this)
+            }
+          }).then(({
+            data
+          }) => (
+            this.teamDialog = false
+          ));
+      },
+
+      deleteTeam(team) {
+        this.team.manager_id = this.$cookie.get('id'),
+          Axios.put(`${apiURL}/api/v1/manage/team`, {
+            active: false,
+            _id: team._id
+          }, {
+            headers: {
+              'Authorization': Authentication.getAuthenticationHeader(this)
+            }
+          }).then(({
+            data
+          }) => (
+            this.getAllTeams()
+          ));
       },
 
       getAllUsers(context) {
@@ -187,21 +224,24 @@
         ))
       },
 
-      test(test){
+      test(test) {
         console.log(test);
       },
 
-      editTeam(team){
-       this.team = team;
-       this.teamDialog = true;
-      },
-      openDialog (){
+      editTeam(team) {
+        this.team = team;
         this.teamDialog = true;
-        this.team = {    name: null,
-          members: []}
+      },
+      
+      openDialog() {
+        this.teamDialog = true;
+        this.team = {
+          name: null,
+          members: []
+        }
       },
 
-         getAllTeamsMember(context) {
+      getAllTeamsMember(context) {
         Axios.get(`${apiURL}/api/v1/manage/team/members`, {
           headers: {
             'Authorization': Authentication.getAuthenticationHeader(this)
@@ -234,7 +274,7 @@
 
 </script>
 <style>
-  .dropdown_avatar .avatar {
+  .avatar {
     background-color: #009688 !important;
     border-color: #009688 !important;
   }

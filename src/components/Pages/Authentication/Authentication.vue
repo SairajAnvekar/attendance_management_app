@@ -9,9 +9,11 @@
                     <v-toolbar dark color="primary">
                       <v-toolbar-title>Login form</v-toolbar-title>
                       <v-spacer></v-spacer>
+                      
                     </v-toolbar>
+                    <v-progress-linear  v-if="loading" :indeterminate="true"></v-progress-linear>
                     <v-card-text>
-                      <v-form v-model="validLogin">
+                      <v-form v-model="validLogin" wrap>
                         <v-text-field  
                         v-model="credentials.username"
                         prepend-icon="account_box"
@@ -38,7 +40,9 @@
                       <v-toolbar dark color="primary">
                         <v-toolbar-title>Sign Up form</v-toolbar-title>
                         <v-spacer></v-spacer>
+                       
                       </v-toolbar>
+                       
                       <v-card-text>
                         <v-form v-model="validSignUp">
                           <v-text-field label="Username"
@@ -162,6 +166,7 @@ export default {
       signUpVisible: false,
       loginPasswordVisible: false,
       signUpPasswordVisible: false,
+      loading: false,
       rules: [ (value) => !!value || 'This field is required' ],
       credentials: {
         username: '',
@@ -181,6 +186,7 @@ export default {
   },
   methods: {
     submitAuthentication () {
+      this.loading =  true;
       Authentication.authenticate(this, this.credentials, '/')
     },
 

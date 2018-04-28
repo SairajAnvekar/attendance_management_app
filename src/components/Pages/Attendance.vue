@@ -3,7 +3,7 @@
    <v-layout>
       <app-header></app-header>
         <v-container >        
-          <app-summary :prop_emp_id="$route.params.id"></app-summary>
+          <app-summary :prop_emp_id="$route.params.id" :prop_emp_no="$route.params.emp_no"></app-summary>
         </v-container>
   <app-footer></app-footer>
 </v-layout>

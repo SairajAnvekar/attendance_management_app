@@ -1,119 +1,207 @@
-
 <template>
-  <header class="l-header-container">
-      <v-navigation-drawer fixed v-model="drawer" app>
-      <v-list dense>       
-        <v-list-tile @click="">
-          <v-list-tile-action>
-            <v-icon>home</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <router-link to="/">
-              <v-list-tile-title>Home</v-list-tile-title>
-            </router-link>
-          </v-list-tile-content>
-        </v-list-tile>
-
-         <v-list-tile @click="">
-          <v-list-tile-action>
-            <v-icon>home</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-content>
-            <router-link to="/leave">
-              <v-list-tile-title>Leave</v-list-tile-title>
-            </router-link>
-          </v-list-tile-content>
-        </v-list-tile>
-       
-           <v-list-tile  @click="">
-            <v-list-tile-action>
-              <v-icon>contact_mail</v-icon>
-            </v-list-tile-action>
+  <div>
+    <v-dialog v-model="profileDialog" fullscreen transition="dialog-bottom-transition" :overlay="false">
+      <v-card>
+        <v-toolbar card dark color="primary">
+          <v-btn icon @click.native="profileDialog = false" dark>
+            <v-icon>close</v-icon>
+          </v-btn>
+          <v-toolbar-title>Employe</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-toolbar-items>
+            <v-btn dark flat v-if="!employe._id" @click.native="save()">Save</v-btn>
+            <v-btn dark flat v-if="employe._id" @click.native="update()">Update</v-btn>
+          </v-toolbar-items>
+        </v-toolbar>
+        <v-list three-line subheader>
+          <v-subheader>User Controls1</v-subheader>
+          <v-divider></v-divider>
+          <v-list-tile avatar>
             <v-list-tile-content>
-                <router-link to="/edit">
-                  <v-list-tile-title>Edit </v-list-tile-title>
-               </router-link>
+              <v-text-field label="Employe Name " v-model="employe.name"></v-text-field>
             </v-list-tile-content>
           </v-list-tile>
 
-           <v-list-tile v-if="role =='admin' || role == 'manager'" @click="">
+          <v-list-tile avatar>
+            <v-list-tile-content>
+              <v-text-field label="Employe Username " v-model="employe.username"></v-text-field>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-tile avatar>
+            <v-list-tile-content>
+              <v-text-field label="Employe Id " v-model="employe.emp_id"></v-text-field>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile avatar>
+            <v-list-tile-content>
+              <v-text-field label="Employe Email " v-model="employe.email"></v-text-field>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile avatar>
+            <v-list-tile-content>
+              <v-text-field label="contact No " v-model="employe.tel_no" required></v-text-field>
+            </v-list-tile-content>
+          </v-list-tile>
+          <v-list-tile avatar>
+            <v-list-tile-content>
+              <v-text-field label="New Password" v-model="employe.password" required></v-text-field>
+            </v-list-tile-content>
+          </v-list-tile>
+        </v-list>
+        <v-divider></v-divider>
+      </v-card>
+    </v-dialog>
+    <header class="l-header-container">
+      <v-navigation-drawer fixed v-model="drawer" app>
+        <v-list dense>
+          <v-list-tile @click="">
+            <v-list-tile-action>
+              <v-icon>home</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <router-link to="/">
+                <v-list-tile-title>Home</v-list-tile-title>
+              </router-link>
+            </v-list-tile-content>
+          </v-list-tile>
+
+          <v-list-tile @click="">
+            <v-list-tile-action>
+              <v-icon>home</v-icon>
+            </v-list-tile-action>
+            <v-list-tile-content>
+              <router-link to="/leave">
+                <v-list-tile-title>Leave</v-list-tile-title>
+              </router-link>
+            </v-list-tile-content>
+          </v-list-tile>       
+
+          <v-list-tile v-if="role =='admin' || role == 'manager'" @click="">
             <v-list-tile-action>
               <v-icon>contact_mail</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
-                <router-link to="/approvals">
-                  <v-list-tile-title>approvals </v-list-tile-title>
-               </router-link>
+              <router-link to="/approvals">
+                <v-list-tile-title>approvals </v-list-tile-title>
+              </router-link>
             </v-list-tile-content>
           </v-list-tile>
 
 
           <v-list-tile v-if="role =='admin' || role == 'manager'" @click="">
             <v-list-tile-action>
-              <v-icon>contact_mail</v-icon>
+              <v-icon>group_work</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
               <router-link to="/teams">
-              <v-list-tile-title>Teams</v-list-tile-title>
+                <v-list-tile-title>Teams</v-list-tile-title>
               </router-link>
             </v-list-tile-content>
           </v-list-tile>
 
-          <v-list-tile v-if="role =='admin' || role == 'manager'" @click="">
-            <v-list-tile-action>
-              <v-icon>contact_mail</v-icon>
-            </v-list-tile-action>
-            <v-list-tile-content>
-              <router-link to="/adminView">
-              <v-list-tile-title>AdminView</v-list-tile-title>
-              </router-link>
-            </v-list-tile-content>
-          </v-list-tile>
-      </v-list>
-      
-      
-    </v-navigation-drawer>      
 
-    <v-toolbar color="indigo" dark fixed app>
+          <router-link v-if="role =='admin' || role == 'manager'" to="/adminView">
+            <v-list-tile v-if="role =='admin' || role == 'manager'" @click="">
+              <v-list-tile-action>
+                <v-icon>contact_mail</v-icon>
+              </v-list-tile-action>
+              <v-list-tile-content>
+
+                <v-list-tile-title>AdminView</v-list-tile-title>
+
+              </v-list-tile-content>
+            </v-list-tile>
+          </router-link>
+        </v-list>
+      </v-navigation-drawer>
+
+      <v-toolbar color="indigo" dark fixed app>
         <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
         <v-toolbar-title>Application</v-toolbar-title>
-         <v-spacer></v-spacer>
-         <v-toolbar-items>
-          <v-btn icon large @click.native="submitSignout()">
-            <v-icon>exit_to_app</v-icon>          
-          </v-btn>        
-      </v-toolbar-items>   
-    </v-toolbar>
-  </header>
+        <v-spacer></v-spacer>
+
+        <v-toolbar-items>
+          <v-menu bottom offset-y>
+            <v-btn icon large slot="activator">
+              <v-icon>settings</v-icon>
+            </v-btn>
+            <v-list>
+              <v-list-tile @click="profileDialog = true">
+                <v-list-tile-title>
+                  <v-icon>account_circle</v-icon> Profile</v-list-tile-title>
+              </v-list-tile>
+              <v-list-tile @click="submitSignout()">
+                <v-list-tile-title>
+                  <v-icon>input</v-icon> Log out</v-list-tile-title>
+              </v-list-tile>
+            </v-list>
+          </v-menu>
+        </v-toolbar-items>
+      </v-toolbar>
+    </header>
+  </div>
 </template>
-<!--v-layout row wrap>
-    <v-flex xs12 offset-md1 md1>
-      <v-btn block color="red lighten-1 white--text" @click.native="submitSignout()">Sign out</v-btn>
-    </v-flex>
-  </v-layout -->
+
 
 <script>
-import Authentication from '@/components/pages/Authentication'
-export default {
-  data () {
-    return {
-      search: '',
-      status: '',     
-      drawer: null,
-      role: this.$cookie.get('role')
-    }
-  },
-  methods: {
-    submitSignout () {
-      Authentication.signout(this, '/login')
-    }
-  },
-  props: {
+  import Authentication from '@/components/pages/Authentication'
+  import Axios from 'axios'
+  import APIurlConfig from '../apiConfig'
+  const apiURL = APIurlConfig.API_URL // 'http://localhost:3001'
+  export default {
+    data() {
+      return {
+        search: '',
+        status: '',
+        employe: {},
+        profileDialog: false,
+        drawer: null,
+        role: this.$cookie.get('role'),
+
+      }
+    },
+    mounted() {
+      this.getEmpDetails()
+    },
+    methods: {
+      submitSignout() {
+        Authentication.signout(this, '/login')
+      },
+      getEmpDetails(context) {
+        Axios.get(`${apiURL}/api/v1/users/admin`, {
+          headers: {
+            'Authorization': Authentication.getAuthenticationHeader(this)
+          },
+          params: {
+            _id: this.$cookie.get('id')
+          }
+        }).then(({
+          data
+        }) => (
+          this.employe = data[0]
+        ));
+      },
+
+      update(context) {
+        Axios.put(`${apiURL}/api/v1/user`, this.employe, {
+          headers: {
+            'Authorization': Authentication.getAuthenticationHeader(this)
+          }
+        }).then(({
+          data
+        }) => (console.log(data)))
+      },
+
+    },
+    props: {
       source: String
     }
-}
+  }
+
 </script>
 
 <style lang="scss">
   @import "./../assets/styles";
+
 </style>

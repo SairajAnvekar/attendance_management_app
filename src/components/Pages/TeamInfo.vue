@@ -52,6 +52,12 @@
                   <v-text-field label="New Password" v-model="employe.password" required></v-text-field>
                 </v-list-tile-content>
               </v-list-tile>
+
+                <v-list-tile avatar>
+                <v-list-tile-content>
+                  <v-text-field label="New Password" v-model="employe.leaves.privilege" required></v-text-field>
+                </v-list-tile-content>
+              </v-list-tile>
             </v-list>
             <v-divider></v-divider>
             <v-list three-line subheader>
@@ -92,13 +98,18 @@
               </v-radio-group>
             </v-list>
           </v-card>
-        </v-dialog>     
+        </v-dialog>  
+         <router-link :to="'../teamApproval/'+$route.params.teamId " style="text-decoration: none">
+                <v-btn small color="green lighten-1 white--text">
+                  <v-icon small left>chrome_reader_mode</v-icon> Leaves Approvals
+                </v-btn>
+              </router-link>
             <v-data-table :headers="headers" :items="usersList" item-key="name" class="elevation-1">
               <template slot="items" slot-scope="props">
                 <td>{{ props.item.username }}</td>
                 <td>{{ props.item.email }}</td>
                 <td class="text-xs-center">
-                  <router-link :to="'../attendance/'+props.item.emp_id " style="text-decoration: none">
+                  <router-link :to="'../attendance/'+props.item._id+'/'+props.item.emp_id " style="text-decoration: none">
                     <v-btn small color="green lighten-1 white--text">
                       <v-icon small left>chrome_reader_mode</v-icon> Attendance
                     </v-btn>
@@ -137,6 +148,9 @@
           email: '',
           _id: '',
           tel_no: '',
+          leaves:{
+           privilege:null
+          },
           role: 'employe'
         },
         headers: [{

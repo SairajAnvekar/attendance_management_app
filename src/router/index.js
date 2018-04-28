@@ -11,6 +11,7 @@ import Attendance from '@/components/pages/Attendance'
 import Approvals from '@/components/pages/Approvals'
 import Teams from '@/components/pages/Team'
 import TeamInfo from '@/components/pages/TeamInfo'
+import TeamApproval from '@/components/pages/TeamApproval'
 import Leave from '@/components/pages/leave'
 // Global components
 import Header from '@/components/Header'
@@ -22,6 +23,7 @@ import Footer from '@/components/Footer'
 Vue.component('app-header', Header)
 Vue.component('app-footer', Footer)
 Vue.component('app-summary', Summary)
+Vue.component('app-approval', Approvals)
 Vue.use(Router)
 
 const router = new Router({
@@ -46,7 +48,7 @@ const router = new Router({
     },
 
   {
-      path: '/attendance/:id',
+      path: '/attendance/:id/:emp_no',
       name: 'Attendance',
       components: {
         default: Attendance,
@@ -126,6 +128,30 @@ const router = new Router({
       name: 'TeamInfo',
       components: {
         default: TeamInfo,
+        header: Header,
+        foter:Footer
+      },
+      meta: {
+        requiredAuth: true
+      }
+    },
+       {
+      path: '/teamApproval',
+      name: 'TeamApproval',
+      components: {
+        default: TeamApproval,        
+        header: Header,
+        foter:Footer
+      },
+      meta: {
+        requiredAuth: true
+      }
+    },
+       {
+      path: '/teamApproval/:teamId',
+      name: 'TeamApproval',
+      components: {
+        default: TeamApproval,        
         header: Header,
         foter:Footer
       },

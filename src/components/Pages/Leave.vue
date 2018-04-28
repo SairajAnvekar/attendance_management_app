@@ -1,65 +1,116 @@
 <template>
-  <v-content>
-    <v-layout>
-      <app-header></app-header>
-      <!-- div md8 -->
-      <v-container>
-        <h3>Admin Approal</h3>
+  <v-app>
+    <v-content>
+      <v-layout>
+        <app-header></app-header>
+        <!-- div md8 -->
+        <v-container>
 
-        <v-form v-model="valid" ref="form" lazy-validation>
-          <v-container fluid grid-list-md>
-            <v-layout row wrap>
-              <v-flex d-flex xs12 sm5 md5>
-                <v-menu ref="startDateMenu" lazy :close-on-content-click="false" v-model="startDateMenu" transition="scale-transition" offset-y
-                  full-width :nudge-right="40" min-width="290px" :return-value.sync="leave.startDate">
-                  <v-text-field slot="activator" label="Start Date" v-model="leave.startDate" prepend-icon="event" readonly></v-text-field>
-                  <v-date-picker v-model="leave.startDate" @input="$refs.startDateMenu.save(leave.startDate)"></v-date-picker>
-                </v-menu>
-              </v-flex>
-              <v-flex d-flex xs12 sm5 md5>
-                <v-menu ref="endDateMenu" lazy :close-on-content-click="false" v-model="endDateMenu" transition="scale-transition" offset-y
-                  full-width :nudge-right="40" min-width="290px" :return-value.sync="endDate">
-                  <v-text-field slot="activator" label="End Date" v-model="leave.endDate" :rules="endDateRule" prepend-icon="event" readonly></v-text-field>
-                  <v-date-picker v-model="leave.endDate" @input="$refs.endDateMenu.save(leave.endDate)"></v-date-picker>
-                </v-menu>
-              </v-flex>
-            </v-layout>
- <v-layout row wrap>
-  <v-flex d-flex xs12 sm6 md5>
-      <v-text-field label="Reason" prepend-icon="event" :multi-line=true rue :row-height=5 v-model="leave.desc" :no-resize=true
-            rue rows=2></v-text-field>
-  </v-flex>
- </v-layout>
+          <v-dialog v-model="leaveDialog" persistent max-width="800px" transition="dialog-bottom-transition">
 
-          </v-container>
-          <v-btn v-on:click="applyLeave" color="green lighten-1 white--text" :disabled="!valid">
-            <v-icon left dark>directions_run</v-icon> Check Out</v-btn>
+            <v-card tile>
+              <v-toolbar card dark color="primary">
+                <v-btn icon @click.native="leaveDialog = false" dark>
+                  <v-icon>close</v-icon>
+                </v-btn>
+                <v-toolbar-title>Settings</v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-toolbar-items>
+                  <v-btn  v-if="  leave._id"dark flat @click.native="updateLeave()">Save</v-btn>
+                </v-toolbar-items>
+              </v-toolbar>
 
-          <v-list two-line>
+              <v-form v-model="valid" ref="form" lazy-validation>
+                <v-container fluid grid-list-md wrap elevation-3>
+                  <v-layout row wrap>
+                    <v-flex d-flex xs12 sm5 md5>
+                      <v-menu ref="startDateMenu" lazy :close-on-content-click="false" v-model="startDateMenu" transition="scale-transition" offset-y
+                        full-width :nudge-right="40" min-width="290px" :return-value.sync="leave.startDate">
+                        <v-text-field slot="activator" label="Start Date" v-model="leave.startDate" prepend-icon="event" readonly></v-text-field>
+                        <v-date-picker v-model="leave.startDate" @input="$refs.startDateMenu.save(leave.startDate)"></v-date-picker>
+                      </v-menu>
+                    </v-flex>
+                    <v-flex d-flex xs12 sm5 md5>
+                      <v-menu ref="endDateMenu" lazy :close-on-content-click="false" v-model="endDateMenu" transition="scale-transition" offset-y
+                        full-width :nudge-right="40" min-width="290px" :return-value.sync="endDate">
+                        <v-text-field slot="activator" label="End Date" v-model="leave.endDate" :rules="endDateRule" prepend-icon="event" readonly></v-text-field>
+                        <v-date-picker v-model="leave.endDate" @input="$refs.endDateMenu.save(leave.endDate)"></v-date-picker>
+                      </v-menu>
+                    </v-flex>
+                    </v-menu>
+                    </v-flex>
+                  </v-layout>
+                  <v-layout row wrap>
+                    <v-flex d-flex xs12 sm6 md5>
+                      <v-text-field label="Reason" prepend-icon="event" :multi-line=true rue :row-height=5 v-model="leave.desc" :no-resize=true
+                        rue rows=2></v-text-field>
+                    </v-flex>
+                     <v-flex d-flex xs12 sm6 md5>
+                        <div class="text-xs-center">
+                          <v-chip color="green" text-color="white">
+                            <v-avatar class="green darken-4">{{leavesAvailable}} </v-avatar>
+                            Leaves Available
+                          </v-chip>
+                        </div>
+                    </v-flex>
+                  </v-layout>
+                
+                  <v-btn  v-if="!leave._id" round v-on:click="applyLeave" color="green lighten-1 white--text" :disabled="!valid">
+                    <v-icon left dark>directions_run</v-icon> Apply</v-btn>
+                </v-container>
+              </v-form>
+            </v-card>
+          </v-dialog>
+
+          <v-btn color="primary" @click.native="addLeave()" fab dark>
+            <v-icon dark>add_circle</v-icon>
+          </v-btn>
+
+
+          <v-list two-line wrap class='elevation-3'>
             <v-subheader>leaves</v-subheader>
             <template v-for="(leave, index) in leaves">
-              <v-list-tile :key="leave.username">
-              <v-list-tile-avatar>
-                  <span class=" headline">{{leave.username.charAt(0).toUpperCase()}}</span>
-              </v-list-tile-avatar>
+              <v-list-tile :key="leave._id">
+                <v-list-tile-avatar class="color">
+                  <span class="white--text headline">{{leave.username.charAt(0).toUpperCase()}}</span>
+                </v-list-tile-avatar>
                 <v-list-tile-content>
                   <v-list-tile-title> {{leave.username}} </v-list-tile-title>
                   <v-list-tile-sub-title>Leave from {{format(leave.start_date)}} to {{format(leave.end_date)}}</v-list-tile-sub-title>
                   <v-list-tile-sub-title v-html="leave.desc"></v-list-tile-sub-title>
                 </v-list-tile-content>
-                <v-list-tile-action>
-                  <v-btn @click="">Edit</v-btn>
+                <v-chip v-if="leave.approve_status" color="teal" text-color="white">
+                  <v-avatar>
+                    <v-icon>check_circle</v-icon>
+                  </v-avatar>
+                  Approved
+                </v-chip>
+                <v-chip v-else color="info" text-color="white">
+                  <v-avatar>
+                    <v-icon>hourglass_empty</v-icon>
+                  </v-avatar>
+                  Pending
+                </v-chip>
+                <v-list-tile-action v-if="!leave.approve_status">
+                  <v-btn @click="edit(leave)" outline small fab color="indigo">
+                    <v-icon>edit</v-icon>
+                  </v-btn>
                 </v-list-tile-action>
               </v-list-tile>
               <v-divider v-if="index + 1 < leaves.length" :key="index"></v-divider>
             </template>
           </v-list>
-        </v-form>
-      </v-container>
-      <!--/div -->
-      <app-footer></app-footer>
-    </v-layout>
-  </v-content>
+
+
+          <v-snackbar :bottom=true :timeout="599" :color="color" v-model="status">
+            {{message}}
+          </v-snackbar>
+        </v-container>
+        <!--/div -->
+        <app-footer></app-footer>
+      </v-layout>
+    </v-content>
+  </v-app>
 </template>
 <script>
   import Axios from 'axios'
@@ -71,20 +122,24 @@
   export default {
     data() {
       return {
-        valid: true,
+        valid: false,
+        leaveDialog: false,
+        status: true,
         leaves: [],
+        message: '',
+        color: "success",
         empId: this.$cookie.get('id'),
         startDateMenu: false,
+        date: moment().format('YYYY-MM-DD'),
         leave: {
-          emp_id: this.$cookie.get('id')
+          emp_id: this.$cookie.get('id'),
         },
-        startDate: null,
         endDateMenu: false,
         endDate: null,
         loginPage: false,
         leavesAvailable: 0,
         endDateRule: [
-          v => !!v || 'Name is required',
+          v => !!v || 'date is required',
           v => (v && moment(this.leave.endDate).isSameOrAfter(moment(this.leave.startDate))) ||
           'End Date must be greater than Start Date',
           v => (v && this.verifyEndDate()) || 'no leavs availabe'
@@ -115,13 +170,28 @@
     },
     mounted() {
       this.getAllLeave(),
-      this.getEmpDetails()
+        this.getEmpDetails()
     },
     methods: {
+      addLeave() {
+        this.leave = {
+          emp_id: this.$cookie.get('id')
+        };
+        this.leaveDialog = true;
+      },
+      edit(leave) {
+        leave.startDate = this.formatYear(leave.start_date)
+        leave.endDate = this.formatYear(leave.end_date)
+        this.leave = leave;
+        this.leaveDialog = true;
+      },
       getAllLeave(context) {
         Axios.get(`${apiURL}/api/v1/attendance/leave`, {
           headers: {
             'Authorization': Authentication.getAuthenticationHeader(this)
+          },
+          params: {
+            emp_id: this.empId
           }
         }).then(({
           data
@@ -145,14 +215,29 @@
           }
         }).then(({
           data
-        }) => (console.log(data[0].leaves.privilege),
+        }) => (
           this.leavesAvailable = data[0].leaves.privilege
         ));
       },
 
-      format(date) {
+      formatYear(date) {
         var attendanceDate = new DateOnly(date);
         return moment(attendanceDate.toDate()).format('YYYY-MM-DD');
+      },
+
+      updateLeave() {
+        Axios.put(`${apiURL}/api/v1/attendance/leave`, this.leave, {
+          headers: {
+            'Authorization': Authentication.getAuthenticationHeader(this)
+          }
+        }).then(({
+          data
+        }) => (
+          this.disableCheckin = true,
+          this.currentAttendance = data.attendance,
+          this.status = true,
+          this.message = "Appplied Leave succesfully"
+        ));
       },
 
       applyLeave() {
@@ -162,7 +247,13 @@
           }
         }).then(({
           data
-        }) => (this.disableCheckin = true, this.currentAttendance = data.attendance));
+        }) => (
+          this.disableCheckin = true,
+          this.leaves.push(data.leave),
+          this.currentAttendance = data.attendance,
+          this.status = true,
+          this.message = "Appplied Leave succesfully"
+        ));
       },
       format(date) {
         var attendanceDate = new DateOnly(date);
@@ -179,3 +270,10 @@
   }
 
 </script>
+<style>
+  .color .avatar {
+    background-color: #009688 !important;
+    border-color: #009688 !important;
+  }
+
+</style>

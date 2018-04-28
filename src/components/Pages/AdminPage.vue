@@ -18,7 +18,7 @@
               </v-toolbar-items>
             </v-toolbar>
             <v-list three-line subheader>
-              <v-subheader>User Controls</v-subheader>
+              <v-subheader>User Controls1</v-subheader>
 
               <v-divider></v-divider>
               <v-list-tile avatar>
@@ -51,6 +51,11 @@
               <v-list-tile avatar>
                 <v-list-tile-content>
                   <v-text-field label="New Password" v-model="employe.password" required></v-text-field>
+                </v-list-tile-content>
+              </v-list-tile>
+              <v-list-tile avatar v-if="employe.leaves">
+                <v-list-tile-content>
+                  <v-text-field label="leaves" v-model="employe.leaves.privilege" required></v-text-field>
                 </v-list-tile-content>
               </v-list-tile>
             </v-list>
@@ -103,7 +108,7 @@
             <td>{{ props.item.username }}</td>
             <td>{{ props.item.email }}</td>
             <td class="text-xs-center">
-              <router-link :to="'attendance/'+props.item.emp_id " style="text-decoration: none">
+              <router-link :to="'attendance/'+props.item._id+'/'+props.item.emp_id " style="text-decoration: none">
                 <v-btn small color="green lighten-1 white--text">
                   <v-icon small left>chrome_reader_mode</v-icon> Attendance
                 </v-btn>
@@ -143,6 +148,9 @@
           email: '',
           _id: '',
           tel_no: '',
+          leaves: {
+           privilege : null
+          },
           role: 'employe'
         },
         defaultSate: this.employe,
@@ -212,7 +220,10 @@
           email: '',
           _id: '',
           tel_no: '',
-          role: 'employe'
+          role: 'employe',
+          leaves: {
+           privilege : null
+          },
         };
       },
 

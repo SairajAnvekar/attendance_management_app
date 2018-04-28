@@ -1,4 +1,5 @@
 <template>
+  <v-app>
   <v-content>
    <v-layout>
       <app-header></app-header>
@@ -27,14 +28,14 @@
               <v-flex xs3 wrap>
                 <div wrap>
                   <p v-if="disableCheckin">{{checkInTime}}</p>                 
-                  <v-btn  small v-else v-on:click="markAttendance" color="green lighten-1 white--text" :disabled="disableCheckin" ><v-icon left dark>directions_run</v-icon> Check In</v-btn>
+                  <v-btn  round  small v-else v-on:click="markAttendance" color="green lighten-1 white--text" :disabled="disableCheckin" ><v-icon left dark>directions_run</v-icon> Check In</v-btn>
                 </div>
               </v-flex>
 
               <v-flex xs3 wrap>
                 <div>
                   <p v-if="disableCheckout"> {{checkoutTime}}</p>
-                  <v-btn  small v-else v-on:click="checkout" color="green lighten-1 white--text"  :disabled="disableCheckout" > <v-icon left dark>directions_run</v-icon> Check Out</v-btn>
+                  <v-btn  round small v-else v-on:click="checkout" color="green lighten-1 white--text"  :disabled="disableCheckout" > <v-icon left dark>directions_run</v-icon> Check Out</v-btn>
                 </div>
               </v-flex>
               <v-flex xs3>
@@ -43,12 +44,13 @@
             </v-layout>              
           </v-list>         
        
-          <app-summary :prop_emp_id="this.$cookie.get('emp_id')"></app-summary>
+          <app-summary :prop_emp_id="this.$cookie.get('id')" :prop_emp_no="this.$cookie.get('emp_id')"></app-summary>
 
         </v-container>
   <app-footer></app-footer>
 </v-layout>
 </v-content>
+  </v-app>
 </template>
 <script>
 import Axios from 'axios'
