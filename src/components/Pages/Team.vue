@@ -13,8 +13,8 @@
               <v-toolbar-title>Team</v-toolbar-title>
               <v-spacer></v-spacer>
               <v-toolbar-items>
-                <v-btn dark flat @click.native="create()">Save</v-btn>
-                <v-btn dark flat @click.native="update()">Update</v-btn>
+                <v-btn dark flat v-if="!team._id" @click.native="create()">Save</v-btn>
+                <v-btn dark flat  v-if="team._id" @click.native="update()">Update</v-btn>
               </v-toolbar-items>
             </v-toolbar>
 
@@ -71,7 +71,7 @@
                 </v-list-tile-content>
               </v-list-tile>
             </v-list>
-
+          
             <v-list two-line>
               <v-subheader>Teams</v-subheader>
               <template v-for="(id, index) in team.members">
@@ -92,10 +92,12 @@
 
           </v-card>
         </v-dialog>
+
         <v-btn color="primary" @click.native="openDialog" fab dark>
           <v-icon dark>group_add</v-icon>
         </v-btn>
 
+        <v-progress-linear  v-if="dataLoading" height="8" style="margin-bottom:0" :indeterminate="true"></v-progress-linear>
         <v-list two-line>
           <v-subheader>Teams</v-subheader>
           <template v-for="(team, index) in teams">
@@ -146,6 +148,7 @@
     data() {
       return {
         teamDialog: false,
+        dataLoading:false,
         team: {
           name: null,
           members: []
@@ -232,7 +235,7 @@
         this.team = team;
         this.teamDialog = true;
       },
-      
+
       openDialog() {
         this.teamDialog = true;
         this.team = {
@@ -256,6 +259,7 @@
         ))
       },
       getAllTeams(context) {
+        this.dataLoading= true;
         Axios.get(`${apiURL}/api/v1/manage/team`, {
           headers: {
             'Authorization': Authentication.getAuthenticationHeader(this)
@@ -266,6 +270,7 @@
         }).then(({
           data
         }) => (
+          this.dataLoading= false,
           this.teams = data
         ))
       }

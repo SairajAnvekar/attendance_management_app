@@ -7,19 +7,17 @@
         <v-container>
 
           <v-dialog v-model="leaveDialog" persistent max-width="800px" transition="dialog-bottom-transition">
-
             <v-card tile>
               <v-toolbar card dark color="primary">
                 <v-btn icon @click.native="leaveDialog = false" dark>
                   <v-icon>close</v-icon>
                 </v-btn>
-                <v-toolbar-title>Settings</v-toolbar-title>
+                <v-toolbar-title>Leaves</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-toolbar-items>
                   <v-btn  v-if="  leave._id"dark flat @click.native="updateLeave()">Save</v-btn>
                 </v-toolbar-items>
               </v-toolbar>
-
               <v-form v-model="valid" ref="form" lazy-validation>
                 <v-container fluid grid-list-md wrap elevation-3>
                   <v-layout row wrap>
@@ -41,17 +39,24 @@
                     </v-flex>
                   </v-layout>
                   <v-layout row wrap>
-                    <v-flex d-flex xs12 sm6 md5>
+                    <v-flex d-flex xs12 >
                       <v-text-field label="Reason" prepend-icon="event" :multi-line=true rue :row-height=5 v-model="leave.desc" :no-resize=true
                         rue rows=2></v-text-field>
                     </v-flex>
                      <v-flex d-flex xs12 sm6 md5>
                         <div class="text-xs-center">
-                          <v-chip color="green" text-color="white">
-                            <v-avatar class="green darken-4">{{leavesAvailable}} </v-avatar>
+                          <v-chip color="teal" text-color="white">
+                            <v-avatar class="teal darken-4">{{leavesAvailable}} </v-avatar>
                             Leaves Available
                           </v-chip>
                         </div>
+                           <div class="text-xs-center">
+                          <v-chip color="teal" text-color="white">
+                            <v-avatar class="teal darken-4">{{sickLeave}} </v-avatar>
+                             Sick Leaves Available
+                          </v-chip>
+                        </div>
+                        
                     </v-flex>
                   </v-layout>
                 
@@ -66,6 +71,7 @@
             <v-icon dark>add_circle</v-icon>
           </v-btn>
 
+        <v-progress-linear  v-if="dataLoading" height="8" style="margin-bottom:0" :indeterminate="true"></v-progress-linear>
 
           <v-list two-line wrap class='elevation-3'>
             <v-subheader>leaves</v-subheader>
@@ -125,6 +131,7 @@
         valid: false,
         leaveDialog: false,
         status: true,
+        dataLoading:false,
         leaves: [],
         message: '',
         color: "success",
@@ -138,6 +145,7 @@
         endDate: null,
         loginPage: false,
         leavesAvailable: 0,
+        sickLeave:0,
         endDateRule: [
           v => !!v || 'date is required',
           v => (v && moment(this.leave.endDate).isSameOrAfter(moment(this.leave.startDate))) ||
@@ -170,7 +178,7 @@
     },
     mounted() {
       this.getAllLeave(),
-        this.getEmpDetails()
+      this.getEmpDetails()
     },
     methods: {
       addLeave() {
@@ -186,6 +194,7 @@
         this.leaveDialog = true;
       },
       getAllLeave(context) {
+        this.dataLoading=true,
         Axios.get(`${apiURL}/api/v1/attendance/leave`, {
           headers: {
             'Authorization': Authentication.getAuthenticationHeader(this)
@@ -196,6 +205,7 @@
         }).then(({
           data
         }) => (
+          this.dataLoading=false,
           this.leaves = data
         ))
       },
@@ -216,7 +226,8 @@
         }).then(({
           data
         }) => (
-          this.leavesAvailable = data[0].leaves.privilege
+          this.leavesAvailable = data[0].leaves.privilege,
+          this.sickLeave = data[0].leaves.sick
         ));
       },
 

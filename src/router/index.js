@@ -12,6 +12,7 @@ import Approvals from '@/components/pages/Approvals'
 import Teams from '@/components/pages/Team'
 import TeamInfo from '@/components/pages/TeamInfo'
 import TeamApproval from '@/components/pages/TeamApproval'
+import AdminApproval from '@/components/pages/AdminApproval'
 import Leave from '@/components/pages/leave'
 // Global components
 import Header from '@/components/Header'
@@ -86,22 +87,10 @@ const router = new Router({
       }
     },
     {
-      path: '/edit',
-      name: 'Edit',
-      components: {
-        default: Edit,
-        header: Header,
-        foter:Footer
-      },
-      meta: {
-        requiredAuth: true
-      }
-    },
-      {
       path: '/approvals',
       name: 'Apprvals',
       components: {
-        default: Approvals,
+        default: AdminApproval,
         header: Header,
         foter:Footer
       },

@@ -21,48 +21,46 @@
 
               <v-divider></v-divider>
               <v-list-tile avatar>
-                <v-list-tile-content>
-                  <v-text-field label="Employe Name " v-model="employe.name"></v-text-field>
+                <v-list-tile-content>               
+                  <v-text-field prepend-icon="person" label="Employe Name " v-model="employe.name"></v-text-field>
                 </v-list-tile-content>
               </v-list-tile>
 
               <v-list-tile avatar>
                 <v-list-tile-content>
-                  <v-text-field label="Employe Username " v-model="employe.username"></v-text-field>
+                  <v-text-field  prepend-icon="person_outline" label="Employe Username " v-model="employe.username"></v-text-field>
                 </v-list-tile-content>
               </v-list-tile>
 
               <v-list-tile avatar>
                 <v-list-tile-content>
-                  <v-text-field label="Employe Id " v-model="employe.emp_id"></v-text-field>
+                  <v-text-field :disabled="!!employe._id" prepend-icon="person_outline" label="Employe Id " v-model="employe.emp_id"></v-text-field>
                 </v-list-tile-content>
               </v-list-tile>
               <v-list-tile avatar>
                 <v-list-tile-content>
-                  <v-text-field label="Employe Email " v-model="employe.email"></v-text-field>
+                  <v-text-field   prepend-icon="mail" label="Employe Email " v-model="employe.email"></v-text-field>
                 </v-list-tile-content>
               </v-list-tile>
               <v-list-tile avatar>
                 <v-list-tile-content>
-                  <v-text-field label="contact No " v-model="employe.tel_no" required></v-text-field>
+                  <v-text-field  prepend-icon="phone" label="contact No " v-model="employe.tel_no" required></v-text-field>
                 </v-list-tile-content>
               </v-list-tile>
               <v-list-tile avatar>
                 <v-list-tile-content>
-                  <v-text-field label="New Password" v-model="employe.password" required></v-text-field>
+                  <v-text-field  prepend-icon="star" label="New Password" v-model="employe.password" required></v-text-field>
                 </v-list-tile-content>
               </v-list-tile>
-
-                <v-list-tile avatar>
+              <v-list-tile avatar>
                 <v-list-tile-content>
-                  <v-text-field label="New Password" v-model="employe.leaves.privilege" required></v-text-field>
+                  <v-text-field  prepend-icon="weekend" label="leaves" v-model="employe.leaves.privilege" required></v-text-field>
                 </v-list-tile-content>
               </v-list-tile>
             </v-list>
             <v-divider></v-divider>
             <v-list three-line subheader>
               <v-subheader>Role</v-subheader>
-
               <v-radio-group v-model="employe.role">
                 <v-list-tile avatar>
                   <v-list-tile-action>
@@ -100,7 +98,7 @@
           </v-card>
         </v-dialog>  
          <router-link :to="'../teamApproval/'+$route.params.teamId " style="text-decoration: none">
-                <v-btn small color="green lighten-1 white--text">
+                <v-btn round outline  color="info lighten-1 white--text">
                   <v-icon small left>chrome_reader_mode</v-icon> Leaves Approvals
                 </v-btn>
               </router-link>
@@ -110,15 +108,15 @@
                 <td>{{ props.item.email }}</td>
                 <td class="text-xs-center">
                   <router-link :to="'../attendance/'+props.item._id+'/'+props.item.emp_id " style="text-decoration: none">
-                    <v-btn small color="green lighten-1 white--text">
+                    <v-btn  round outline  color="info lighten-1 white--text">
                       <v-icon small left>chrome_reader_mode</v-icon> Attendance
                     </v-btn>
                   </router-link>
                 </td>
                 <td class="text-xs-center">
-                  <v-btn small color="green lighten-1 white--text" v-on:click="editEmploye(props.item)">
-                    <v-icon small left>edit</v-icon> Edit
-                  </v-btn>
+                 <v-btn  v-on:click="editEmploye(props.item)" outline small fab color="indigo">
+                  <v-icon>edit</v-icon>
+                </v-btn>
                 </td>
               </template>
             </v-data-table>

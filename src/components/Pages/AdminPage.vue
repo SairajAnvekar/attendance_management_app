@@ -1,8 +1,8 @@
 <template>
   <v-content>
     <v-layout>
-      <app-header></app-header>
-      <v-container>
+      <app-header></app-header>       
+      <v-container>        
         <h3>Users</h3>
         <v-dialog v-model="dialog2" fullscreen transition="dialog-bottom-transition" :overlay="false" scrollable>
           <v-card>
@@ -17,45 +17,46 @@
                 <v-btn dark flat v-if="employe._id" @click.native="update()">Update</v-btn>
               </v-toolbar-items>
             </v-toolbar>
+
             <v-list three-line subheader>
-              <v-subheader>User Controls1</v-subheader>
+              <v-subheader>User Controls</v-subheader>
 
               <v-divider></v-divider>
               <v-list-tile avatar>
-                <v-list-tile-content>
-                  <v-text-field label="Employe Name " v-model="employe.name"></v-text-field>
+                <v-list-tile-content>               
+                  <v-text-field prepend-icon="person" label="Employe Name " v-model="employe.name"></v-text-field>
                 </v-list-tile-content>
               </v-list-tile>
 
               <v-list-tile avatar>
                 <v-list-tile-content>
-                  <v-text-field label="Employe Username " v-model="employe.username"></v-text-field>
+                  <v-text-field  prepend-icon="person_outline" label="Employe Username " v-model="employe.username"></v-text-field>
                 </v-list-tile-content>
               </v-list-tile>
 
               <v-list-tile avatar>
                 <v-list-tile-content>
-                  <v-text-field label="Employe Id " v-model="employe.emp_id"></v-text-field>
+                  <v-text-field :disabled="!!employe._id" prepend-icon="person_outline" label="Employe Id " v-model="employe.emp_id"></v-text-field>
                 </v-list-tile-content>
               </v-list-tile>
               <v-list-tile avatar>
                 <v-list-tile-content>
-                  <v-text-field label="Employe Email " v-model="employe.email"></v-text-field>
+                  <v-text-field   prepend-icon="mail" label="Employe Email " v-model="employe.email"></v-text-field>
                 </v-list-tile-content>
               </v-list-tile>
               <v-list-tile avatar>
                 <v-list-tile-content>
-                  <v-text-field label="contact No " v-model="employe.tel_no" required></v-text-field>
+                  <v-text-field  prepend-icon="phone" label="contact No " v-model="employe.tel_no" required></v-text-field>
                 </v-list-tile-content>
               </v-list-tile>
               <v-list-tile avatar>
                 <v-list-tile-content>
-                  <v-text-field label="New Password" v-model="employe.password" required></v-text-field>
+                  <v-text-field  prepend-icon="star" label="New Password" v-model="employe.password" required></v-text-field>
                 </v-list-tile-content>
               </v-list-tile>
-              <v-list-tile avatar v-if="employe.leaves">
+              <v-list-tile avatar>
                 <v-list-tile-content>
-                  <v-text-field label="leaves" v-model="employe.leaves.privilege" required></v-text-field>
+                  <v-text-field  prepend-icon="weekend" label="leaves" v-model="employe.leaves.privilege" required></v-text-field>
                 </v-list-tile-content>
               </v-list-tile>
             </v-list>
@@ -102,22 +103,23 @@
         <v-btn color="primary" fab dark @click="create()">
           <v-icon dark>group_add</v-icon>
         </v-btn>
-
+        <v-progress-linear v-if="tableLoading" style="margin-bottom:0" :indeterminate="true"></v-progress-linear>
         <v-data-table :headers="headers" :items="usersList" :pagination.sync="pagination" item-key="name" class="elevation-1">
           <template slot="items" slot-scope="props">
             <td>{{ props.item.username }}</td>
             <td>{{ props.item.email }}</td>
+            <td>{{ props.item.role.toUpperCase() }}</td>
             <td class="text-xs-center">
               <router-link :to="'attendance/'+props.item._id+'/'+props.item.emp_id " style="text-decoration: none">
-                <v-btn small color="green lighten-1 white--text">
-                  <v-icon small left>chrome_reader_mode</v-icon> Attendance
+                <v-btn  fab outline  color="indigo lighten-1 white--text">
+                  <v-icon>content_paste</v-icon>
                 </v-btn>
               </router-link>
             </td>
-            <td class="text-xs-center">
-              <v-btn small color="green lighten-1 white--text" v-on:click="editEmploye(props.item)">
-                <v-icon small left>edit</v-icon> Edit
-              </v-btn>
+            <td class="text-xs-center">       
+                <v-btn  v-on:click="editEmploye(props.item)" outline  fab color="indigo">
+                  <v-icon>edit</v-icon>
+                </v-btn>
             </td>
           </template>
         </v-data-table>
@@ -139,6 +141,7 @@
         validated: 0,
         usersList: [],
         loginPage: false,
+        tableLoading:false,
         dialog2: false,
         role: this.$cookie.get('role'),
         employe: {
@@ -165,28 +168,36 @@
           },
           {
             text: 'Email',
-            align: 'center',
+            align: 'left',
             value: 'Action'
           },
-          {
-            text: 'Action',
-            align: 'center',
-            value: 'Action'
+            {
+            text: 'Role',
+            align: 'left',
+            value: 'Role'
           },
           {
-            text: 'Action2',
+            text: 'Attendance',
             align: 'center',
-            value: 'Action'
+            value: 'Action',
+            sortable: false,
+          },
+          {
+            text: 'Edit',
+            align: 'center',
+            value: 'Action',
+            sortable: false,
           }
         ]
       }
     },
     mounted() {
       this.getAllUsers(),
-        this.getAllRegularize()
+      this.getAllRegularize()
     },
     methods: {
       getAllUsers(context) {
+        this.tableLoading=true;
         Axios.get(`${apiURL}/api/v1/users/admin`, {
           headers: {
             'Authorization': Authentication.getAuthenticationHeader(this)
@@ -195,6 +206,7 @@
           data
         }) => (
           this.usersList = data,
+          this.tableLoading=false,
           this.handleUsers()
         ))
       },

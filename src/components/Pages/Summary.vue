@@ -165,9 +165,7 @@
 
 
       regularizeDialog(emp_id, date) {
-        this.dialog2 = true;
-        console.log('emp_id')
-        console.log(emp_id)
+        this.dialog2 = true;            
         this.slectedForRegularize.emp_id = emp_id;
         this.slectedForRegularize.date = date;
       },
@@ -187,7 +185,7 @@
       regularize() {
         Axios.post(`${apiURL}/api/v1/attendance/regularize`, {
           emp_id: this.slectedForRegularize.emp_id,
-          date: this.slectedForRegularize.date,
+          date: this.generateDateTime(this.slectedForRegularize.date, this.checkin),
           in_time: this.generateDateTime(this.slectedForRegularize.date, this.checkin),
           out_time: this.generateDateTime(this.slectedForRegularize.date, this.checkout)
         }, {
@@ -196,7 +194,9 @@
           }
         }).then(({
           data
-        }) => (console.log(data)));
+        }) => ( 
+         this.dialog2 = false        
+        ));
       },
 
       getAllAttendance(context) {
@@ -310,10 +310,9 @@
         //for Chrome and Firefox 
         else {
           document.querySelector("#download").setAttribute('href', data_type + ', ' + encodeURIComponent(tab_text));
-          document.querySelector("#download").setAttribute('download', 'Test file.xls');
+          document.querySelector("#download").setAttribute('download', 'Report.xls');
           document.getElementById("download").click();
-        }
-        console.log(tab_text);
+        }      
       },
 
 
