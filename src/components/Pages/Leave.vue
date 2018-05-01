@@ -15,7 +15,7 @@
                 <v-toolbar-title>Leaves</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-toolbar-items>
-                  <v-btn  v-if="  leave._id"dark flat @click.native="updateLeave()">Save</v-btn>
+                  <v-btn v-if="  leave._id" dark flat @click.native="updateLeave()">Save</v-btn>
                 </v-toolbar-items>
               </v-toolbar>
               <v-form v-model="valid" ref="form" lazy-validation>
@@ -39,28 +39,28 @@
                     </v-flex>
                   </v-layout>
                   <v-layout row wrap>
-                    <v-flex d-flex xs12 >
-                      <v-text-field label="Reason" prepend-icon="event" :multi-line=true rue :row-height=5 v-model="leave.desc" :no-resize=true
+                    <v-flex d-flex xs12>
+                      <v-text-field label="Reason" prepend-icon="event" :multi-line=true  :row-height=5 v-model="leave.desc" :no-resize=true
                         rue rows=2></v-text-field>
                     </v-flex>
-                     <v-flex d-flex xs12 sm6 md5>
-                        <div class="text-xs-center">
-                          <v-chip color="teal" text-color="white">
-                            <v-avatar class="teal darken-4">{{leavesAvailable}} </v-avatar>
-                            Leaves Available
-                          </v-chip>
-                        </div>
-                           <div class="text-xs-center">
-                          <v-chip color="teal" text-color="white">
-                            <v-avatar class="teal darken-4">{{sickLeave}} </v-avatar>
-                             Sick Leaves Available
-                          </v-chip>
-                        </div>
-                        
+                    <v-flex d-flex xs12 sm6 md5>
+                      <div class="text-xs-center">
+                        <v-chip color="teal" text-color="white">
+                          <v-avatar class="teal darken-4">{{leavesAvailable}} </v-avatar>
+                          Leaves Available
+                        </v-chip>
+                      </div>
+                      <div class="text-xs-center">
+                        <v-chip color="teal" text-color="white">
+                          <v-avatar class="teal darken-4">{{sickLeave}} </v-avatar>
+                          Sick Leaves Available
+                        </v-chip>
+                      </div>
+
                     </v-flex>
                   </v-layout>
-                
-                  <v-btn  v-if="!leave._id" round v-on:click="applyLeave" color="green lighten-1 white--text" :disabled="!valid">
+
+                  <v-btn v-if="!leave._id" round v-on:click="applyLeave" color="green lighten-1 white--text" :disabled="!valid">
                     <v-icon left dark>directions_run</v-icon> Apply</v-btn>
                 </v-container>
               </v-form>
@@ -71,7 +71,7 @@
             <v-icon dark>add_circle</v-icon>
           </v-btn>
 
-        <v-progress-linear  v-if="dataLoading" height="8" style="margin-bottom:0" :indeterminate="true"></v-progress-linear>
+          <v-progress-linear v-if="dataLoading" height="8" style="margin-bottom:0" :indeterminate="true"></v-progress-linear>
 
           <v-list two-line wrap class='elevation-3'>
             <v-subheader>leaves</v-subheader>
@@ -108,7 +108,7 @@
           </v-list>
 
 
-          <v-snackbar :bottom=true :timeout="599" :color="color" v-model="status">
+          <v-snackbar :top=true :timeout="999" :color="color" v-model="snackbar">
             {{message}}
           </v-snackbar>
         </v-container>
@@ -130,8 +130,8 @@
       return {
         valid: false,
         leaveDialog: false,
-        status: true,
-        dataLoading:false,
+        snackbar: true,
+        dataLoading: false,
         leaves: [],
         message: '',
         color: "success",
@@ -145,7 +145,7 @@
         endDate: null,
         loginPage: false,
         leavesAvailable: 0,
-        sickLeave:0,
+        sickLeave: 0,
         endDateRule: [
           v => !!v || 'date is required',
           v => (v && moment(this.leave.endDate).isSameOrAfter(moment(this.leave.startDate))) ||
@@ -178,7 +178,7 @@
     },
     mounted() {
       this.getAllLeave(),
-      this.getEmpDetails()
+        this.getEmpDetails()
     },
     methods: {
       addLeave() {
@@ -194,24 +194,27 @@
         this.leaveDialog = true;
       },
       getAllLeave(context) {
-        this.dataLoading=true,
-        Axios.get(`${apiURL}/api/v1/attendance/leave`, {
-          headers: {
-            'Authorization': Authentication.getAuthenticationHeader(this)
-          },
-          params: {
-            emp_id: this.empId
-          }
-        }).then(({
-          data
-        }) => (
-          this.dataLoading=false,
-          this.leaves = data
-        ))
+        this.dataLoading = true,
+          Axios.get(`${apiURL}/api/v1/attendance/leave`, {
+            headers: {
+              'Authorization': Authentication.getAuthenticationHeader(this)
+            },
+            params: {
+              emp_id: this.empId
+            }
+          }).then(({
+            data
+          }) => (
+            this.dataLoading = false,
+            this.leaves = data
+          ))
       },
 
       verifyEndDate() {
-        return (moment(this.leave.endDate).diff(moment(this.leave.startDate), 'days') + 1) < this.leavesAvailable;
+        const days = moment(this.leave.endDate).diff(moment(this.leave.startDate), 'days') + 1;
+        console.log(this.sickleave)
+        console.log(this.leavesAvailable == 0 && days <= this.sickLeave)
+        return days <= this.leavesAvailable || (this.leavesAvailable == 0 && days <= this.sickLeave);
       },
 
 
@@ -246,9 +249,14 @@
         }) => (
           this.disableCheckin = true,
           this.currentAttendance = data.attendance,
-          this.status = true,
+          this.snackbar = true,
+          this.color = 'succes',
           this.message = "Appplied Leave succesfully"
-        ));
+        )).catch(({response: {data}}) => {
+          this.snackbar = true
+          this.color = 'error'
+          this.message = "Sorry could not update"
+        });
       },
 
       applyLeave() {
@@ -262,9 +270,14 @@
           this.disableCheckin = true,
           this.leaves.push(data.leave),
           this.currentAttendance = data.attendance,
-          this.status = true,
+          this.snackbar = true,
+          this.color = 'succes',
           this.message = "Appplied Leave succesfully"
-        ));
+        )).catch(({response: {data}}) => {
+          this.snackbar = true
+          this.color = 'error'
+          this.message = data.message
+        })
       },
       format(date) {
         var attendanceDate = new DateOnly(date);

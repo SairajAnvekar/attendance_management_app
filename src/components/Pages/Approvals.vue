@@ -46,7 +46,9 @@
             <v-data-table :headers="headers" :items="approvalList" :pagination.sync="pagination" item-key="name" class="elevation-1">
               <template slot="items" slot-scope="props">
                 <td>{{ props.item.emp_no }}</td>
+                <td>{{ props.item.username }}</td>
                 <td>{{ format(props.item.date) }}</td>
+                 <td>{{ props.item.reason }}</td>
                 <td class="text-xs-center">               
                    <v-btn   v-if="!props.item.approve_status" v-on:click="markAttendance((props.item.emp_no),(props.item.date),(props.item.checkin), (props.item.checkout),(props.item._id))" round outline color="primary">Approve</v-btn>
                   <v-chip  v-else color="teal" text-color="white">
@@ -126,10 +128,16 @@
           sortBy: 'date'
         },
         headers: [{
-            text: 'Username',
+            text: 'Emp Id',
             align: 'left',
             sortable: false,
             value: 'username'
+          },
+             {
+            text: 'User Name',
+            align: 'left',
+            sortable: false,
+            value: 'date'
           },
           {
             text: 'Date',
@@ -138,7 +146,13 @@
             value: 'date'
           },
           {
-            text: 'Action',
+            text: 'Reason',
+            align: 'left',
+            sortable: false,
+            value: 'date'
+          },
+          {
+            text: ' Approvals',
             align: 'center',
             value: 'Action'
           }
@@ -266,7 +280,7 @@
         this.loadingRegularize = true,
         Axios.post(`${apiURL}/api/v1/attendance`, {
           emp_id: emp_id,
-          date: date1,
+          date: inTime,
           in_time: inTime,
           out_time: outTime,
           regularize_id: id

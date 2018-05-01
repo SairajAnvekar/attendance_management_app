@@ -48,7 +48,13 @@
                                 <v-time-picker v-model="checkout" @change="$refs.checkout.save(checkout)"></v-time-picker>
                             </v-menu>
                         </v-flex>
-                    </v-layout>                
+                       
+                    </v-layout>   
+                    <v-layout row>
+                         <v-flex xs11 row >                         
+                                <v-text-field slot="activator" label="Reason" v-model="reason" prepend-icon="event" :multi-line=true :row-height=1 :no-resize=true   rue rows=2 ></v-text-field>
+                        </v-flex>
+                    </v-layout>             
                     <v-btn round color="primary"  v-bind:class="{ 'btn--disabled' : !checkout || !checkin }"  @click="regularize()">Regularize</v-btn>
                 </v-card-text>
         
@@ -70,7 +76,11 @@
                 </tr>
             </template>
         </v-data-table>
-    </div>
+      <v-snackbar :top=true :timeout="999" :color="color" v-model="snackbar">
+        {{message}}
+      </v-snackbar>
+    </div>    
+  
 </template>
 <script>
   import Axios from 'axios'
@@ -93,6 +103,10 @@
         attendances: [],
         date: moment().format('YYYY-MM'),
         menu: false,
+        snackbar: false,
+        color: 'success',
+        message:'',
+        reason:'',
         checkin: null,
         checkinMenu: false,
         checkout: null,
@@ -187,7 +201,8 @@
           emp_id: this.slectedForRegularize.emp_id,
           date: this.generateDateTime(this.slectedForRegularize.date, this.checkin),
           in_time: this.generateDateTime(this.slectedForRegularize.date, this.checkin),
-          out_time: this.generateDateTime(this.slectedForRegularize.date, this.checkout)
+          out_time: this.generateDateTime(this.slectedForRegularize.date, this.checkout),
+          reason: this.reason
         }, {
           headers: {
             'Authorization': Authentication.getAuthenticationHeader(this)
@@ -195,8 +210,15 @@
         }).then(({
           data
         }) => ( 
-         this.dialog2 = false        
-        ));
+          this.snackbar = true,
+          this.message = " Added succesfuly",
+          this.color = 'success',
+          this.dialog2 = false        
+        )).catch(({response: {data}}) => {
+          this.snackbar = true
+          this.color = 'error'
+          this.message = data.message
+        });;
       },
 
       getAllAttendance(context) {
